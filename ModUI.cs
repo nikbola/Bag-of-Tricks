@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace BagOfTricks
 {
-    public class PlayerSettings
+    public class ModUI
     {
         public static UnityModManager.ModEntry mod;
 
@@ -72,6 +72,9 @@ namespace BagOfTricks
 
             modEntry.OnShowGUI = OnShowGUI;
 
+            Cheats.InitializeEventSubscriptions();
+            Stats.InitializeEventSubscriptions();
+
             return true;
         }
 
@@ -128,7 +131,7 @@ namespace BagOfTricks
                 // KILL ALL ENEMIES BUTTON
                 if (GUILayout.Button("Kill All Enemies", GUILayout.Width(150f)))
                 {
-                    Cheats.KillAllEnemies();
+                    OnKillEnemiesPressed?.Invoke();
                 }
                 if (GUILayout.Button(KillAllEnemiesKeyBindText, GUILayout.Width(DefaultButtonWidth)))
                 {
@@ -143,16 +146,15 @@ namespace BagOfTricks
                 GUILayout.Space(5f);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Enable Godmode", GUILayout.Width(DefaultCheatsLabelWidth));
-                bool GodModeToggle = GUILayout.Toggle(Storage.GodModeEnabled, string.Empty, GUILayout.Width(190f));
+                bool GodModeToggle = GUILayout.Toggle(PreviousGodModeValue, string.Empty, GUILayout.Width(190f));
                 if (GodModeToggle != PreviousGodModeValue)
                 {
-                    Cheats.EnableGodMode(GodModeToggle);
-                    Storage.GodModeEnabled = GodModeToggle;
+                    OnGodModeToggled?.Invoke(GodModeToggle);
                     PreviousGodModeValue = GodModeToggle;
                 }
                 if (GUILayout.Button("Clear Fog", GUILayout.Width(150f)))
                 {
-                    Cheats.ClearFogOfWar();
+                    OnClearFogOfWarPressed?.Invoke();
                 }
                 if (GUILayout.Button(ClearFogKeyBindText, GUILayout.Width(DefaultButtonWidth)))
                 {
@@ -166,11 +168,10 @@ namespace BagOfTricks
                 GUILayout.Space(5f);
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Enable Invisibility", GUILayout.Width(DefaultCheatsLabelWidth));
-                bool InvisibilityToggle = GUILayout.Toggle(Storage.InvisibilityEnabled, string.Empty);
+                bool InvisibilityToggle = GUILayout.Toggle(PreviousInvisibilityValue, string.Empty);
                 if (InvisibilityToggle != PreviousInvisibilityValue)
                 {
-                    Cheats.EnableInvisibility(InvisibilityToggle);
-                    Storage.InvisibilityEnabled = InvisibilityToggle;
+                    OnInvisibilityToggled?.Invoke(InvisibilityToggle);
                     PreviousInvisibilityValue = InvisibilityToggle;
                 }
                 GUILayout.EndHorizontal();
@@ -186,7 +187,7 @@ namespace BagOfTricks
                     bool parseSuccessful = int.TryParse(InputFieldText, out int value);
                     if (parseSuccessful)
                     {
-                        Cheats.AddCurrency(value);
+                        OnAddCurrency?.Invoke(value);
                         CurrencyToAdd = value;
                     }
                     else
@@ -250,7 +251,7 @@ namespace BagOfTricks
                     GUILayout.Label(LabelString, GUILayout.Width(DefaultLabelWidth));
                     if (GUILayout.Button("-", GUILayout.Width(25)))
                     {
-                        Stats.SetBaseAttributeScore(type, partyMember, statValue - 1);
+                        OnAttributeChanged?.Invoke(type, partyMember, statValue - 1);
                     }
                     var style = GUI.skin.GetStyle("Label");
                     style.alignment = TextAnchor.UpperCenter;
@@ -258,7 +259,7 @@ namespace BagOfTricks
                     style.alignment = TextAnchor.UpperLeft;
                     if (GUILayout.Button("+", GUILayout.Width(25)))
                     {
-                        Stats.SetBaseAttributeScore(type, partyMember, statValue + 1);
+                        OnAttributeChanged?.Invoke(type, partyMember, statValue + 1);
                     }
                     GUILayout.EndHorizontal();
                 }
@@ -459,7 +460,7 @@ namespace BagOfTricks
             GUILayout.Label(labelText, GUILayout.Width(DefaultLabelWidth));
             if (GUILayout.Button("-", GUILayout.Width(25)))
             {
-                Stats.SetBaseSkillScore(skillType, partyMember, skillValue - 1);
+                OnSkillChanged?.Invoke(skillType, partyMember, skillValue - 1);
             }
             var skillStyle = GUI.skin.GetStyle("Label");
             skillStyle.alignment = TextAnchor.UpperCenter;
@@ -467,9 +468,32 @@ namespace BagOfTricks
             skillStyle.alignment = TextAnchor.UpperLeft;
             if (GUILayout.Button("+", GUILayout.Width(25)))
             {
-                Stats.SetBaseSkillScore(skillType, partyMember, skillValue + 1);
+                OnSkillChanged?.Invoke(skillType, partyMember, skillValue + 1);
             }
             GUILayout.EndHorizontal();
         }
+
+        // CHEAT EVENTS
+        public delegate void KillEnemiesPressed();
+        public static KillEnemiesPressed OnKillEnemiesPressed;
+
+        public delegate void GodModeToggled(bool enabled);
+        public static GodModeToggled OnGodModeToggled;
+
+        public delegate void ClearFogOfWarPressed();
+        public static ClearFogOfWarPressed OnClearFogOfWarPressed;
+
+        public delegate void InvisibilityToggled(bool enabled);
+        public static InvisibilityToggled OnInvisibilityToggled;
+
+        public delegate void AddCurrency(int amount);
+        public static AddCurrency OnAddCurrency;
+
+        // STAT EVENTS
+        public delegate void AttributeChanged(CharacterStats.AttributeScoreType type, PartyMemberAI partyMember, int value);
+        public static AttributeChanged OnAttributeChanged;
+
+        public delegate void SkillChanged(CharacterStats.SkillType type, PartyMemberAI partyMember, int value);
+        public static SkillChanged OnSkillChanged;
     }
 }

@@ -10,12 +10,33 @@ namespace BagOfTricks
     {
         static object[] partyMembers = null;
 
+        /// <summary>
+        /// Subscribe to UI events
+        /// </summary>
+        public static void InitializeEventSubscriptions()
+        {
+            ModUI.OnAttributeChanged += SetBaseAttributeScore;
+            ModUI.OnSkillChanged += SetBaseSkillScore;
+        }
+
+        /// <summary>
+        /// Fetches the base value of a given attribute for a given party member.
+        /// </summary>
+        /// <param name="type">The attribute to fetch.</param>
+        /// <param name="partyMember">The party member to fetch the attribute value from.</param>
+        /// <returns>The base attribute score for a specific party member based on the given attribute type.</returns>
         public static int GetBaseAttributeScore(CharacterStats.AttributeScoreType type, PartyMemberAI partyMember)
         {
             CharacterStats stats = partyMember.GetComponent<CharacterStats>();
             return stats.GetBaseAttributeScore(type);
         }
 
+        /// <summary>
+        /// Sets the base value of a given attribute for a given party member.
+        /// </summary>
+        /// <param name="type">The attribute to apply the value to.</param>
+        /// <param name="partyMember">The party member to apply the attribute value to.</param>
+        /// <param name="value">The new attribute value to apply.</param>
         public static void SetBaseAttributeScore(CharacterStats.AttributeScoreType type, PartyMemberAI partyMember, int value)
         {
             CharacterStats stats = partyMember.GetComponent<CharacterStats>();
@@ -46,12 +67,24 @@ namespace BagOfTricks
             }
         }
 
+        /// <summary>
+        /// Fetches the base value of a given skill from a given party member.
+        /// </summary>
+        /// <param name="type">The skill type to fetch.</param>
+        /// <param name="partyMember">The party member to fetch the skill value from.</param>
+        /// <returns>The base value for a specific party member based on the given skill type.</returns>
         public static int GetBaseSkillScore(CharacterStats.SkillType type, PartyMemberAI partyMember)
         {
             CharacterStats stats = partyMember.GetComponent<CharacterStats>();
             return stats.GetSkillRank(type);
         }
 
+        /// <summary>
+        /// Sets the base value of a given skill for a given party member.
+        /// </summary>
+        /// <param name="type">The skill apply the value to.</param>
+        /// <param name="partyMember">The party member to apply the skill value to.</param>
+        /// <param name="value">The new skill value to apply.</param>
         public static void SetBaseSkillScore(CharacterStats.SkillType type, PartyMemberAI partyMember, int value)
         {
             CharacterStats stats = partyMember.GetComponent<CharacterStats>();
@@ -95,6 +128,10 @@ namespace BagOfTricks
             }
         }
 
+        /// <summary>
+        /// Fetches all party members in the current party, including the player character.
+        /// </summary>
+        /// <returns>The party members in the current party as an object array.</returns>
         public static object[] GetPartyMembers()
         {
             if (partyMembers != null && partyMembers.Length > 0)

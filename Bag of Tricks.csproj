@@ -62,7 +62,7 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="KeyHandler.cs" />
     <Compile Include="Mover_Patch.cs" />
-    <Compile Include="PlayerSettings.cs" />
+    <Compile Include="ModUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stats.cs" />
     <Compile Include="Storage.cs" />

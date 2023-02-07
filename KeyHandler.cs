@@ -6,6 +6,11 @@ namespace BagOfTricks
     {
         public static bool WaitingForInput = false;
 
+        /// <summary>
+        /// Listens for input to register if a key registration button has been pressed in the menu.
+        /// If not, it checks if the given input is in the list of registered key binds.
+        /// If it is, it performs the corresponding action.
+        /// </summary>
         public static void HandleInput()
         {
             if (WaitingForInput)
@@ -23,10 +28,10 @@ namespace BagOfTricks
                         switch (Storage.CurrentKeyAction)
                         {
                             case Storage.KeyActions.KillAllEnemies:
-                                PlayerSettings.KillAllEnemiesKeyBindText = inputString.ToUpper();
+                                ModUI.KillAllEnemiesKeyBindText = inputString.ToUpper();
                                 break;
                             case Storage.KeyActions.ClearFog:
-                                PlayerSettings.ClearFogKeyBindText = inputString.ToUpper();
+                                ModUI.ClearFogKeyBindText = inputString.ToUpper();
                                 break;
                             default:
                                 break;
@@ -55,11 +60,17 @@ namespace BagOfTricks
             }
         }
 
+        /// <summary>
+        /// Registers a key binding for a specific action.
+        /// </summary>
+        /// <param name="key">The given input as a string.</param>
+        /// <param name="keyAction">The action to bind the key to.</param>
+        /// <returns>True if binding was successful, otherwise false.</returns>
         public static bool RegisterKeyBinding(string key, Storage.KeyActions keyAction) 
         {
             if (key == "")
             {
-                PlayerSettings.mod.Logger.Log("The given key-binding is not valid.");
+                ModUI.mod.Logger.Log("The given key-binding is not valid.");
                 return false;
             }
             string oldBinding = "";
@@ -75,10 +86,15 @@ namespace BagOfTricks
                 Storage.KeyBindings.Remove(oldBinding);
             }
             Storage.KeyBindings.Add(key, keyAction);
-            PlayerSettings.mod.Logger.Log($"KeyAction {keyAction} bound to \"{key}\" key.");
+            ModUI.mod.Logger.Log($"KeyAction {keyAction} bound to \"{key}\" key.");
             return true;
         }
 
+        /// <summary>
+        /// Fetches the action corresponding to a given key.
+        /// </summary>
+        /// <param name="key">The string representation of a key input.</param>
+        /// <returns>The action the given key corresponds to.</returns>
         public static Storage.KeyActions GetKeyAction(string key)
         {
             if (Storage.KeyBindings.TryGetValue(key, out Storage.KeyActions keyAction))

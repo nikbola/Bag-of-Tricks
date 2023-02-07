@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace BagOfTricks
 {
+    /// <summary>
+    /// Hijacks the Initialize() method from the TelemetryManager class and blocks it
+    /// if the "Block Telemetry" option is active. If not, telemetry initializes normally.
+    /// </summary>
     [HarmonyPatch(typeof(TelemetryManager), "Initialize", MethodType.Normal)]
     public static class TelemetryManager_Initialize_Patch
     {
@@ -13,7 +17,7 @@ namespace BagOfTricks
         {
             if (Storage.BlockTelemetry)
             {
-                PlayerSettings.mod.Logger.Log("Blocked Telemetry Initialization");
+                ModUI.mod.Logger.Log("Blocked Telemetry Initialization");
                 return false;
             }
             return true;

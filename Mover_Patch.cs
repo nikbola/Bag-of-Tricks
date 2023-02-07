@@ -2,6 +2,9 @@
 
 namespace BagOfTricks
 {
+    /// <summary>
+    /// Patches the Update() method of the Mover class to modify the move speed of the player/companions
+    /// </summary>
     [HarmonyPatch(typeof(Mover), "Update", MethodType.Normal)]
     public class Mover_Patch
     {
